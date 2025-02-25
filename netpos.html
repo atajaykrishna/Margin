@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Trade Details</title>
+    <link rel="icon" href="https://i.postimg.cc/ydJF7CkV/Trade-Prime-Logo.jpg" type="image/png">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Basic Reset */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        /* Navigation Bar Styling */
+        .navbar {
+            background-color: #2980b9;
+            padding: 15px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar-logo {
+            font-size: 1.8em;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+        }
+
+        .navbar-logo .logo-img {
+            height: 60px;
+            width: 60px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Navigation Menu Styling */
+        .navbar-menu {
+            display: flex;
+            list-style: none;
+        }
+
+        .navbar-menu li {
+            margin: 0 20px;
+        }
+
+        .navbar-menu a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.1em;
+            padding: 8px 16px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar-menu a:hover {
+            background-color: #1c6ea4;
+        }
+
+        /* Hamburger Menu */
+        .navbar-toggle {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+        }
+
+        .navbar-toggle .bar {
+            width: 20px;
+            height: 3px;
+            background-color: white;
+            margin: 5px 0;
+        }
+
+        /* Mobile Menu Hidden Offscreen */
+        @media (max-width: 768px) {
+            .navbar-menu {
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                top: 0;
+                left: -250px;
+                width: 250px;
+                height: 100%;
+                background-color: #2980b9;
+                box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+                transition: left 0.3s ease-in-out;
+                padding-top: 60px;
+            }
+
+            .navbar-menu.active {
+                left: 0;
+            }
+
+            .navbar-menu li {
+                margin: 20px 0;
+                text-align: left;
+                padding-left: 20px;
+            }
+
+            .navbar-toggle {
+                display: flex;
+                flex-direction: column;
+                cursor: pointer;
+            }
+        }
+
+        /* Content Styling */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h2 {
+            font-size: 2em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        h3 {
+    margin-bottom: 20px; /* Adds space between the heading and the table */
+    font-size: 1.5em;    /* Optional: Adjust the font size for the heading */
+}
+
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            margin-bottom: 50px; /* Adjust this value to your preference */
+        }
+
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: linear-gradient(135deg, #2980b9, #1c6ea4);
+            color: white;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background: #ecf0f1;
+        }
+
+        tr:hover {
+            background: #d5dbdb;
+            transition: 0.3s ease-in-out;
+        }
+
+        /* Client Trade Details Container */
+        .client-trade-details {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .client-trade-details p {
+            font-size: 1.1em;
+            margin-bottom: 15px;  /* Increased spacing between lines */
+        }
+
+        .client-trade-details p span {
+            font-weight: bold;
+            color: #333;
+        }
+
+
+    </style>
+</head>
+<body>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="#" class="navbar-logo">
+                <img src="https://i.postimg.cc/ydJF7CkV/Trade-Prime-Logo.jpg" alt="Trade Prime Logo" class="logo-img">
+            </a>
+            <ul class="navbar-menu">
+                <li><a href="https://sstxj044-8000.inc1.devtunnels.ms/client_details#">Home</a></li>
+                <li><a href="https://sstxj044-8000.inc1.devtunnels.ms/netpos#">Net Positions</a></li>
+                <li><a href="#">Services</a></li>
+                <li><a href="#">Calculator</a></li>
+            </ul>
+            <div class="navbar-toggle" id="navbarToggle">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <h2>Client Details</h2>
+
+        <div class="client-trade-details">
+            <p>Name: <span id="name">N/A</span></p>
+            <p>Email: <span id="email">N/A</span></p>
+            <p>Balance: <span id="balance">N/A</span></p>
+            <p>Margin Free: <span id="marginFree">N/A</span></p>
+            <p>U Margin: <span id="pmargin">N/A</span></p>
+            <p>Profit: <span id="profit">N/A</span></p>
+        </div>
+        
+
+        <h3>Net Deals by Symbol</h3>
+        <table id="netDealsTable">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Net Buy Volume (lots)</th>
+                    <th>Average Open Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Net deal rows will be populated here -->
+            </tbody>
+        </table>
+
+        <h3>Buy/Sell Breakdown by Symbol</h3>
+        <table id="buySellBreakdownTable">
+            <thead>
+                <tr>
+                    <th>Symbol</th>
+                    <th>Buy Volume (lots)</th>
+                    <th>Buy Average Open Price</th>
+                    <th>Sell Volume (lots)</th>
+                    <th>Sell Average Open Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Buy/Sell breakdown rows will be populated here -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+        // JavaScript for Navbar toggle on mobile
+        document.getElementById('navbarToggle').addEventListener('click', function() {
+            document.querySelector('.navbar-menu').classList.toggle('active');
+        });
+
+        // JavaScript for populating client data
+        const clientData = JSON.parse(localStorage.getItem('clientData'));
+
+        if (clientData) {
+   
+
+            document.getElementById('name').textContent = clientData.name || 'N/A';
+            document.getElementById('email').textContent = clientData.email || 'N/A';
+            document.getElementById('balance').textContent = clientData.balance || 'N/A';
+            document.getElementById('marginFree').textContent = clientData.margin_free || 'N/A';
+            document.getElementById('pmargin').textContent = clientData.umargin || 'N/A';
+            document.getElementById('profit').textContent = clientData.profit || 'N/A';
+
+            const netDeals = {};
+            const buySellBreakdown = {};
+
+            clientData.positions.forEach(position => {
+                const symbol = position.Symbol;
+                const volume = position['Volume (lots)'];
+                const openPrice = position['Price Open'];
+                const action = position.Action.toLowerCase();
+
+                if (!netDeals[symbol]) {
+                    netDeals[symbol] = { volume: 0, totalOpenPrice: 0 };
+                }
+
+                if (action === 'buy') {
+                    netDeals[symbol].volume += volume;
+                    netDeals[symbol].totalOpenPrice += (volume * openPrice);
+                } else if (action === 'sell') {
+                    netDeals[symbol].volume -= volume;
+                    netDeals[symbol].totalOpenPrice -= (volume * openPrice);
+                }
+
+                if (!buySellBreakdown[symbol]) {
+                    buySellBreakdown[symbol] = { buy: { volume: 0, totalOpenPrice: 0 }, sell: { volume: 0, totalOpenPrice: 0 } };
+                }
+
+                if (action === 'buy') {
+                    buySellBreakdown[symbol].buy.volume += volume;
+                    buySellBreakdown[symbol].buy.totalOpenPrice += (volume * openPrice);
+                } else if (action === 'sell') {
+                    buySellBreakdown[symbol].sell.volume += volume;
+                    buySellBreakdown[symbol].sell.totalOpenPrice += (volume * openPrice);
+                }
+            });
+
+            const netDealsTable = document.getElementById('netDealsTable').getElementsByTagName('tbody')[0];
+            Object.keys(netDeals).forEach(symbol => {
+                const netVolume = netDeals[symbol].volume;
+                const averageOpenPrice = netDeals[symbol].volume ? (netDeals[symbol].totalOpenPrice / netDeals[symbol].volume).toFixed(2) : 'N/A';
+                const row = `
+                    <tr>
+                        <td>${symbol}</td>
+                        <td>${netVolume}</td>
+                        <td>${averageOpenPrice}</td>
+                    </tr>
+                `;
+                netDealsTable.innerHTML += row;
+            });
+
+            const buySellTable = document.getElementById('buySellBreakdownTable').getElementsByTagName('tbody')[0];
+            Object.keys(buySellBreakdown).forEach(symbol => {
+                const buyVolume = buySellBreakdown[symbol].buy.volume;
+                const buyAveragePrice = buyVolume ? (buySellBreakdown[symbol].buy.totalOpenPrice / buyVolume).toFixed(2) : 'N/A';
+                const sellVolume = buySellBreakdown[symbol].sell.volume;
+                const sellAveragePrice = sellVolume ? (buySellBreakdown[symbol].sell.totalOpenPrice / sellVolume).toFixed(2) : 'N/A';
+
+                const row = `
+                    <tr>
+                        <td>${symbol}</td>
+                        <td>${buyVolume}</td>
+                        <td>${buyAveragePrice}</td>
+                        <td>${sellVolume}</td>
+                        <td>${sellAveragePrice}</td>
+                    </tr>
+                `;
+                buySellTable.innerHTML += row;
+            });
+
+        } else {
+            alert('No client data available!');
+        }
+    </script>
+</body>
+</html>

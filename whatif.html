@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Details - Financial</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="icon" href="https://i.postimg.cc/ydJF7CkV/Trade-Prime-Logo.jpg" type="image/png">
+
+    <style>
+        /* Basic Reset */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        /* General Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+
+        /* Container Styling */
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styling */
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Info Section Styling */
+        .info-section {
+            background: #fff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-section h2 {
+            font-size: 1.5em;
+            color: #333;
+            border-bottom: 2px solid #2980b9;
+            padding-bottom: 5px;
+        }
+
+        .info-section p {
+            font-size: 18px;
+            margin: 10px 0;
+            padding: 8px;
+            background: #ffffff;
+            border-left: 5px solid #2980b9;
+            border-radius: 5px;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: linear-gradient(135deg, #2980b9, #1c6ea4);
+            color: white;
+            text-transform: uppercase;
+        }
+
+        tr:nth-child(even) {
+            background: #ecf0f1;
+        }
+
+        tr:hover {
+            background: #d5dbdb;
+            transition: 0.3s ease-in-out;
+        }
+
+
+
+        #finalValue, #margin30 {
+            display: none;
+        }
+
+
+
+
+        /* Footer Styling */
+        footer {
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+@media (max-width: 768px) {
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+
+        
+    </style>
+</head>
+<body>
+
+<header>
+    Financial Dashboard
+</header>
+
+
+
+<div class="container">
+    <div class="info-section">
+        <h2>Client Details</h2>
+        <span id="finalValue">Loading...</span></p>
+        <p><strong>Name:</strong> <span id="name">Loading...</span></p>
+        <p><strong>Email:</strong> <span id="email">Loading...</span></p>
+        <p><strong>Balance:</strong> <span id="balance">Loading...</span></p>
+        <p><strong>Margin Free:</strong> <span id="marginFree">Loading...</span></p>
+        <p><strong>Margin:</strong> <span id="pmargin">Loading...</span></p>
+        <p><strong>Profit:</strong> <span id="profit">Loading...</span></p>
+        <p><strong>Total PNL:</strong> <span id="totalLivePNLValue">Loading...</span></p>
+        <p><strong>Equity:</strong> <span id="avlbleeq">Loading...</span></p>
+
+        <span id="margin30">Loading...</span></p>
+    </div>
+
+
+    <div class="chart-section">
+        <h2>Positions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Position</th>
+                    <th>Symbol</th>
+                    <th>Action</th>
+                    <th>Volume (lots)</th>
+                    <th>Price Open</th>
+                    <th>Price Current</th>
+                    <th>Live PNL</th>
+                    <th>Profit</th>
+                </tr>
+            </thead>
+            <tbody id="positionsTable">
+                <!-- Rows will be added dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+
+
+
+
+<!-- Main Content Area -->
+<div class="main-content">
+    <!-- Existing content here -->
+</div>
+
+
+
+    <script>
+ // Retrieve client data from localStorage
+const clientData = JSON.parse(localStorage.getItem('clientData'));
+
+if (clientData) {
+    // Populate client details
+    document.getElementById('name').textContent = clientData.name || 'N/A';
+    document.getElementById('email').textContent = clientData.email || 'N/A';
+    document.getElementById('balance').textContent = clientData.balance || 'N/A';
+    document.getElementById('marginFree').textContent = clientData.margin_free || 'N/A';
+    document.getElementById('pmargin').textContent = clientData.umargin || 'N/A';
+    document.getElementById('profit').textContent = clientData.profit || 'N/A';
+    
+
+    // Populate positions table
+    const positionsTable = document.getElementById('positionsTable');
+    clientData.positions.forEach(position => {
+        const row = `
+            <tr data-symbol="${position.Symbol}">
+                <td>${position.Position}</td>
+                <td>${position.Symbol}</td>
+                <td>${position.Action}</td>
+                <td class="volume">${position['Volume (lots)']}</td>
+                <td class="priceOpen">${position['Price Open']}</td>
+                <td class="priceCurrent">${position['Price Current']}</td>
+                <td class="livePNL">N/A</td> <!-- Add the live PNL cell -->
+                <td>${position.Profit}</td>
+            </tr>
+        `;
+        positionsTable.innerHTML += row;
+    });
+} else {
+    alert('No client data available!');
+}
+
+const margin30 = clientData.umargin ? (clientData.umargin * 0.3).toFixed(2) : 'N/A';
+
+document.getElementById('margin30').textContent = margin30;
+
+document.addEventListener("DOMContentLoaded", function () {
+    const toggleButton = document.getElementById("navbarToggle");
+    const navbarMenu = document.querySelector(".navbar-menu");
+
+    toggleButton.addEventListener("click", function () {
+        navbarMenu.classList.toggle("active");
+    });
+});
+
+
+// Function to fetch contract sizes from GitHub
+async function fetchContractSizes() {
+    try {
+        const response = await fetch('https://raw.githubusercontent.com/atajaykrishna/Marginlevel/main/contract%20size');
+        let textData = await response.text();
+
+        // Clean and format the data
+        textData = textData.replace(/VOLUME_PER_LOT\s*=\s*\{/, '{')
+                           .replace(/'/g, '"')
+                           .replace(/,$/, '')  // Remove trailing comma
+                           .trim();
+
+        if (!textData.endsWith('}')) {
+            textData += '}';
+        }
+
+        contractSizes = JSON.parse(textData);
+        
+
+    } catch (error) {
+        console.error('Error fetching contract sizes:', error);
+    }
+
+    
+}
+
+// Call the function to fetch contract sizes
+fetchContractSizes();
+
+const socket = new WebSocket('wss://sstxj044-3000.inc1.devtunnels.ms/ws'); // Replace with actual WebSocket URLhttps://sstxj044-3000.inc1.devtunnels.ms/
+let contractSizes = {}; // Initialize contractSizes
+
+socket.addEventListener('message', async (event) => {
+    try {
+        const message = JSON.parse(event.data);
+        let totalLivePNL = 0;
+
+        const rows = document.querySelectorAll('tr[data-symbol]');
+
+        for (let row of rows) {
+            const symbol = row.getAttribute('data-symbol');
+            const priceCell = row.querySelector('.priceCurrent');
+            const pnlCell = row.querySelector('.livePNL');
+            const volumeCell = row.querySelector('.volume');
+            const priceOpenCell = row.querySelector('.priceOpen');
+            const actionCell = row.querySelector('td:nth-child(3)'); // Action column
+
+            const action = actionCell.textContent.trim();
+            let currentPrice = null;
+
+            if (action === 'Buy') {
+                currentPrice = message[symbol + '-BID'] || null;
+            } else if (action === 'Sell') {
+                currentPrice = message[symbol + '-ASK'] || null;
+            }
+
+            const contractSize = contractSizes[symbol] || contractSizes[symbol + '.r'] || 1; 
+
+            if (currentPrice !== null) {
+                priceCell.textContent = currentPrice;
+
+                const priceOpen = parseFloat(priceOpenCell.textContent);
+                const volume = parseFloat(volumeCell.textContent);
+                let livePNL = 0;
+
+                if (symbol === 'TTBAED') {
+                    // Special calculation for TTBAED
+                    if (action === 'Buy') {
+                        livePNL = (currentPrice - priceOpen) / 13.7625 * volume * contractSize;
+                    } else if (action === 'Sell') {
+                        livePNL = (priceOpen - currentPrice) / 13.7625 * volume * contractSize;
+                    }
+                } else {
+                    // Standard calculation
+                    if (action === 'Buy') {
+                        livePNL = (currentPrice - priceOpen) * volume * contractSize;
+                    } else if (action === 'Sell') {
+                        livePNL = (priceOpen - currentPrice) * volume * contractSize;
+                    }
+                }
+
+                pnlCell.textContent = livePNL.toFixed(2);
+                totalLivePNL += livePNL;
+            } else {
+                priceCell.textContent = 'No live price';
+                pnlCell.textContent = 'N/A';
+            }
+        }
+
+        // Update total PNL
+        document.getElementById('totalLivePNLValue').textContent = totalLivePNL.toFixed(2);
+        
+
+        const avlbleeq = (parseFloat(clientData.balance) + parseFloat(clientData.credit) + totalLivePNL).toFixed(2);
+        const freeMargin = (parseFloat(avlbleeq) - parseFloat(clientData.umargin)).toFixed(2);
+        document.getElementById('marginFree').textContent = freeMargin;
+        document.getElementById('avlbleeq').textContent = avlbleeq;
+        const finalValue = (parseFloat(avlbleeq) - parseFloat(margin30)).toFixed(2);
+        document.getElementById('finalValue').textContent = finalValue;
+
+    } catch (error) {
+        
+    }
+});
+
+// WebSocket event listeners
+socket.addEventListener('close', () => console.log('WebSocket closed.'));
+socket.addEventListener('error', (error) => console.error('WebSocket error:', error));
+
+// --- New "What-If" Functions ---
+
+// Close all positions
+function closeAllPositions() {
+    const rows = document.querySelectorAll('tr[data-symbol]');
+    rows.forEach(row => {
+        const symbol = row.getAttribute('data-symbol');
+        const actionCell = row.querySelector('td:nth-child(3)');
+        const action = actionCell.textContent.trim();
+
+        if (action === 'Buy' || action === 'Sell') {
+            // Close position logic, assuming the action is either Buy or Sell
+            console.log(`Closing position: ${symbol} - ${action}`);
+            // Implement your position closing logic here (API call)
+        }
+    });
+}
+
+// Open new positions with free margin
+function openNewPosition() {
+    const freeMargin = parseFloat(clientData.margin_free);
+    const maxTradeVolume = freeMargin / 1000; // Example logic, adjust as per your contract size
+
+    const possibleSymbols = ['Symbol1', 'Symbol2', 'Symbol3']; // Replace with your symbols
+    const tradeData = possibleSymbols.map(symbol => {
+        return {
+            symbol: symbol,
+            maxVolume: maxTradeVolume
+        };
+    });
+
+    console.log('Possible new trades with available margin:', tradeData);
+}
+
+// Trade based on free margin
+function tradeBasedOnMargin() {
+    const freeMargin = parseFloat(clientData.margin_free);
+    const tradeSize = freeMargin / 1000; // Define how much to trade with the available margin
+
+    console.log(`Trade based on free margin: ${tradeSize}`);
+    // Further implementation to place the trade can go here
+}
+
+// Deposit money
+function depositMoney(amount) {
+    clientData.balance = (parseFloat(clientData.balance) + amount).toFixed(2);
+    document.getElementById('balance').textContent = clientData.balance;
+    console.log(`Deposited ${amount}, new balance: ${clientData.balance}`);
+}
+
+// Withdraw money
+function withdrawMoney(amount) {
+    if (parseFloat(clientData.balance) >= amount) {
+        clientData.balance = (parseFloat(clientData.balance) - amount).toFixed(2);
+        document.getElementById('balance').textContent = clientData.balance;
+        console.log(`Withdrew ${amount}, new balance: ${clientData.balance}`);
+    } else {
+        console.log('Insufficient funds to withdraw.');
+    }
+}
+
+// Hedge position
+function hedgePosition(symbol, volume) {
+    // Assuming hedging involves opening an opposite position
+    console.log(`Hedging position for symbol: ${symbol}, Volume: ${volume}`);
+    // Implement hedge logic here
+}
+
+// Escape from hedged position
+function escapeHedgedPosition(symbol) {
+    console.log(`Escaping from hedged position for symbol: ${symbol}`);
+    // Implement logic to escape or close hedged positions here
+}
+
+// Example "What-If" calls (you can trigger these based on UI interactions or buttons)
+document.getElementById('closePositionsBtn').addEventListener('click', closeAllPositions);
+document.getElementById('openNewPositionBtn').addEventListener('click', openNewPosition);
+document.getElementById('depositMoneyBtn').addEventListener('click', () => depositMoney(1000)); // Example deposit of 1000
+document.getElementById('withdrawMoneyBtn').addEventListener('click', () => withdrawMoney(500)); // Example withdraw of 500
+
+
+</script>
+</body>
+</html>
